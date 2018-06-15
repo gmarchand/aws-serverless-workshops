@@ -26,13 +26,13 @@ validate-stack: ## cfn validate template
 	aws cloudformation validate-template --template-body file://./iam.template --profile ${PROFILE}
 
 create-stack: ## cfn create stack
-	aws cloudformation create-stack --stack-name ${STACK_NAME} --profile ${PROFILE} --capabilities CAPABILITY_IAM --template-body file://./iam.template --parameters=ParameterKey=Password,ParameterValue=${PASSWORD}
+	aws cloudformation create-stack --stack-name ${STACK_NAME} --profile ${PROFILE} --capabilities CAPABILITY_NAMED_IAM --template-body file://./iam.template --parameters=ParameterKey=Password,ParameterValue=${PASSWORD}
 
 delete-stack: ## cfn delete stack
 	aws cloudformation delete-stack --stack-name ${STACK_NAME} --profile ${PROFILE}
 
 update-stack:  ## update cfn template
-	aws cloudformation create-change-set --change-set-name ${CFN_CHANGE_SET} --stack-name ${STACK_NAME} --capabilities CAPABILITY_IAM --template-body file://./iam.template --parameters=ParameterKey=Password,ParameterValue=${PASSWORD} --profile ${PROFILE}
+	aws cloudformation create-change-set --change-set-name ${CFN_CHANGE_SET} --stack-name ${STACK_NAME} --capabilities CAPABILITY_NAMED_IAM --template-body file://./iam.template --parameters=ParameterKey=Password,ParameterValue=${PASSWORD} --profile ${PROFILE}
 	aws cloudformation describe-change-set --change-set-name ${CFN_CHANGE_SET} --stack-name ${STACK_NAME} --profile ${PROFILE}
 	sleep 10
 	aws cloudformation execute-change-set --change-set-name ${CFN_CHANGE_SET} --stack-name ${STACK_NAME} --profile ${PROFILE}
