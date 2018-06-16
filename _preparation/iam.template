@@ -49,7 +49,9 @@
       "Type" : "AWS::IAM::Group",
       "Properties": {
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+          "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess",
+          "arn:aws:iam::aws:policy/AWSCodeCommitFullAccess",
+          "arn:aws:iam::aws:policy/IAMSelfManageServiceSpecificCredentials"
         ]
       }
     },
@@ -142,7 +144,6 @@
               "iam:PassRole",
               "iam:AttachRolePolicy",
               "iam:Get*"
-
               ],
             "Resource" : "*"
           }]
