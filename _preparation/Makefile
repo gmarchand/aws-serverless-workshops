@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 include .env
-STACK_NAME?=WildRydesIAM
+STACK_NAME?=WildRydesIAM-DoNotDelete
 
 GIT_FQDN?=                   $(shell git config --get remote.origin.url | sed 's@\(.*\):\(.*\).git@\2@g')
 GIT_REF_NAME?=               $(shell git rev-parse --abbrev-ref HEAD | tr '/' '-' )
@@ -39,6 +39,3 @@ update-stack:  ## update cfn template
 
 output-stack: ## cfn output
 	aws cloudformation describe-stacks --stack-name ${STACK_NAME} --profile ${PROFILE}
-
-update-seed1:
-	aws cloudformation update-stack --stack-name Seed-1-ServerlessApplicationModel --profile ${PROFILE} --capabilities CAPABILITY_NAMED_IAM --template-url https://s3.amazonaws.com/fsd-aws-wildrydes-eu-west-1/codecommit-template.yml --parameters=ParameterKey=targetRepositoryRegionParameterValue=eu-west-1,ParameterKey=targetRepositoryName,ParameterValue=uni-api,ParameterKey=sourceUrl,ParameterValue=https://s3-eu-west-1.amazonaws.com/fsd-aws-wildrydes-eu-west-1/uni-api-1-v2.zip
