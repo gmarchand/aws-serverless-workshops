@@ -26,8 +26,9 @@ git clone https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/uni-api
 Cloning into 'uni-api'...
 fatal: unable to access 'https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/uni-api/': The requested URL returned error: 403
 ```
-Solution 
+Solution
 
 ```
 git config --global credential.helper '!aws --profile workshop1 codecommit credential-helper $@'
 ```
+Or, on Macos, install the official version of Git not MacosX version without "keychain access"
