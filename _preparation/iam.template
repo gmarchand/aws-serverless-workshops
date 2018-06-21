@@ -51,7 +51,8 @@
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess",
           "arn:aws:iam::aws:policy/AWSCodeCommitFullAccess",
-          "arn:aws:iam::aws:policy/IAMSelfManageServiceSpecificCredentials"
+          "arn:aws:iam::aws:policy/IAMSelfManageServiceSpecificCredentials",
+          "arn:aws:iam::aws:policy/AWSCloud9User"
         ]
       }
     },
