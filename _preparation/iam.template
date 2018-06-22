@@ -1,0 +1,179 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "Wild Rydes Workshop Prep",
+
+  "Parameters" : {
+    "Password": {
+      "NoEcho": "true",
+      "Type": "String",
+      "Description" : "New account password",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "AllowedPattern" : "[a-zA-Z0-9]*",
+      "ConstraintDescription" : "must contain only alphanumeric characters."
+    }
+  },
+
+  "Resources" : {
+    "CFNUser" : {
+      "Type" : "AWS::IAM::User",
+      "Properties" : {
+        "LoginProfile": {
+          "Password": { "Ref" : "Password" }
+        }
+      }
+    },
+    "CFNCodeStarServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+          "RoleName":"aws-codestar-service-role",
+          "AssumeRolePolicyDocument": {
+              "Statement": [
+                  {
+                      "Effect": "Allow",
+                      "Principal": {
+                          "Service": [ "codestar.amazonaws.com" ]
+                      },
+                      "Action": [ "sts:AssumeRole" ]
+                  }
+              ]
+          },
+          "Path": "/service-role/",
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSCodeStarServiceRole"
+          ]
+      }
+  },
+    "CFNUserGroup" : {
+      "Type" : "AWS::IAM::Group",
+      "Properties": {
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess",
+          "arn:aws:iam::aws:policy/AWSCodeCommitFullAccess",
+          "arn:aws:iam::aws:policy/IAMSelfManageServiceSpecificCredentials",
+          "arn:aws:iam::aws:policy/AWSCloud9User"
+        ]
+      }
+    },
+
+
+    "Users" : {
+      "Type" : "AWS::IAM::UserToGroupAddition",
+      "Properties" : {
+        "GroupName": { "Ref" : "CFNUserGroup" },
+        "Users" : [ { "Ref" : "CFNUser" } ]
+      }
+    },
+
+    "CFNCodeStarFullAccessPolicies" : {
+      "Type" : "AWS::IAM::Policy",
+      "Properties" : {
+        "PolicyName" : "CFNCodeStarFullAccess",
+        "PolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "CodeStarEC2",
+              "Effect": "Allow",
+              "Action": [
+                "codestar:*",
+                "ec2:DescribeKeyPairs",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "CodeStarCF",
+              "Effect": "Allow",
+              "Action": [
+                "cloudformation:DescribeStack*",
+                "cloudformation:GetTemplateSummary"
+              ],
+              "Resource": [
+                "arn:aws:cloudformation:*:*:stack/awscodestar-*"
+              ]
+            }
+          ]
+        },
+        "Groups" : [{ "Ref" : "CFNUserGroup" }]
+      }
+    },
+
+    "CFNUserPolicies" : {
+      "Type" : "AWS::IAM::Policy",
+      "Properties" : {
+        "PolicyName" : "CFNUsers",
+        "PolicyDocument" : {
+          "Statement": [{
+            "Effect"   : "Allow",
+            "Action"   : [
+              "apigateway:*",
+              "athena:*",
+              "budgets:*",
+              "cloudformation:*",
+              "cloudfront:*",
+              "cloudtrail:*",
+              "cloudwatch:*",
+              "cloud9:*",
+              "codebuild:*",
+              "codecommit:*",
+              "codedeploy:*",
+              "codepipeline:*",
+              "codestar:*",
+              "cur:describe*",
+              "cognito-identity:*",
+              "cognito-idp:*",
+              "deploy:*",
+              "dynamodb:*",
+              "glue:*",
+              "health:*",
+              "kinesis:*",
+              "kinesisanalytics:*",
+              "lambda:*",
+              "logs:*",
+              "mobile:*",
+              "rekognition:*",
+              "route53:*",
+              "sns:*",
+              "sqs:*",
+              "xray:*",
+              "s3:*",
+              "iam:CreateRole",
+              "iam:PutRolePolicy",
+              "iam:PassRole",
+              "iam:AttachRolePolicy",
+              "iam:Get*",
+              "states:*"
+              ],
+            "Resource" : "*"
+          }]
+        },
+        "Groups" : [{ "Ref" : "CFNUserGroup" }]
+      }
+    },
+
+    "CFNKeys" : {
+      "Type" : "AWS::IAM::AccessKey",
+      "Properties" : {
+        "UserName" : { "Ref": "CFNUser" }
+      }
+    }
+  },
+
+  "Outputs" : {
+    "AccessKey" : {
+      "Value" : { "Ref" : "CFNKeys" },
+      "Description" : "AWSAccessKeyId of new user"
+    },
+    "SecretKey" : {
+      "Value" : { "Fn::GetAtt" : ["CFNKeys", "SecretAccessKey"]},
+      "Description" : "AWSSecretKey of new user"
+    },
+    "UserName" : {
+      "Value" : { "Ref" : "CFNUser" },
+      "Description" : "AWSUserName of new user"
+    }
+  }
+}
